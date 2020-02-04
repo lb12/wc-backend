@@ -9,27 +9,10 @@ const dbUtils = require('../utils/dbUtils');
 const securityUtils = require('../utils/securityUtils');
 
 
-const createUser = async (req, res, next) => {
+const createUser = async (userObj) => {
     try {
-        validationResult(req).throw();
-        
-        let data = req.body;
-
-        // Check if email or username exists
-        let exists = await User.existsField({ username: data.username }) != null || 
-                     await User.existsField({ email: data.email }) != null;
-
-        if (exists) {
-            return res.status(422).send({ success: false, message: 'Username or email currently used' });
-        }
-
-        // Hash password
-        data.password = await securityUtils.hashString(data.password);
-
-        const user = new User(data);
-        const savedUser = await user.save();
-        
-        return res.status(200).send({ success: true, result: savedUser });
+        const user = new User(userObj);
+        return await user.save();
     } catch (error) {
         return next(error);
     }
@@ -58,6 +41,8 @@ const getUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
     try {
+        validationResult(req).throw();
+
         const userId = req.params.id;
         let data = req.body;
 

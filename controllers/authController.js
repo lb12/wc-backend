@@ -1,14 +1,19 @@
 "use strict";
 
+// Node imports
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
+// Our imports
 const User = require("../models/User");
+const userController = require("./userController");
+const securityUtils = require("../utils/securityUtils");
 
 /**
  * POST recieve credentials and return a JWT token if credentials are OK
  */
-async function authenticate(req, next) {
+const signIn = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
@@ -16,19 +21,56 @@ async function authenticate(req, next) {
 
     // Check user exists or if plain password is ok
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return { success: false, error: "Invalid credentials" };
+      return res
+        .status(422)
+        .json({ success: false, error: "Invalid credentials" });
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "3d"
     });
 
-    return { success: true, result: token };
+    return res.status(200).json({ success: true, result: token });
   } catch (error) {
     next(error);
   }
-}
+};
+
+const signUp = async (req, res, next) => {
+  try {
+    validationResult(req).throw();
+
+    const { username, email, password } = req.body;
+
+    const user = await User.findOne({ $or: [{ username }, { email }] });
+
+    // El usuario ya existe, por lo que hay que retornar un error
+    if (user) {
+      return res
+        .status(422)
+        .json({ success: false, error: "Username or email currently used" });
+    }
+
+    // Hash password
+    const hash = await securityUtils.hashString(password);
+
+    const createdUser = await userController.createUser({
+      username,
+      email,
+      password: hash
+    });
+
+    const token = jwt.sign({ _id: createdUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "3d"
+    });
+
+    return res.status(200).json({ success: true, result: token });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
-  authenticate
+  signIn,
+  signUp
 };
