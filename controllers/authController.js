@@ -27,7 +27,7 @@ const signIn = async (req, res, next) => {
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "3d"
+      expiresIn: "1d"
     });
 
     return res.status(200).json({ success: true, result: token });
@@ -48,7 +48,7 @@ const signUp = async (req, res, next) => {
     if (user) {
       return res
         .status(422)
-        .json({ success: false, error: "Username or email currently used" });
+        .json({ success: false, message: "Username or email currently used" });
     }
 
     // Hash password
@@ -61,10 +61,12 @@ const signUp = async (req, res, next) => {
     });
 
     const token = jwt.sign({ _id: createdUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "3d"
+      expiresIn: "1d"
     });
 
-    return res.status(200).json({ success: true, result: token });
+    createdUser.password = null;
+
+    return res.status(200).json({ success: true, result: { user: createdUser, token} });
   } catch (error) {
     next(error);
   }

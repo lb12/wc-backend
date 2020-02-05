@@ -6,6 +6,8 @@ const { check, body } = require('express-validator');
 
 // Our imports
 const authController = require('../controllers/authController');
+const userController = require('../controllers/userController');
+const jwtAuth = require("../lib/jwtAuth");
 
 const router = express.Router();
 
@@ -20,5 +22,6 @@ router.post('/signup',
         check('password').isLength({ min: 6 }).withMessage('Password should be at least 6 chars long')
     ],
     authController.signUp);
+router.post('/checkToken', jwtAuth(), userController.getUser);
 
 module.exports = router;
