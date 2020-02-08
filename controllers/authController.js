@@ -23,14 +23,16 @@ const signIn = async (req, res, next) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res
         .status(422)
-        .json({ success: false, error: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
     });
 
-    return res.status(200).json({ success: true, result: token });
+    user.password = null;
+
+    return res.status(200).json({ success: true, result: { user, token} });
   } catch (error) {
     next(error);
   }
