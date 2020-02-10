@@ -32,6 +32,7 @@ require("./lib/dbConnection");
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/User");
 const advertRouter = require("./routes/advert");
+const tagsRouter = require("./routes/tags");
 const authRouter = require("./routes/authentication");
 const jwtAuth = require("./lib/jwtAuth");
 const apiPath = "/api-v1";
@@ -39,6 +40,7 @@ const apiPath = "/api-v1";
 app.use(apiPath + "/auth", authRouter);
 app.use(apiPath + "/user", userRouter);
 app.use(apiPath + "/adverts", advertRouter);
+app.use(apiPath + "/tags", tagsRouter);
 app.use(apiPath + "/", indexRouter);
 
 // Catch 404 and forward to error handler
