@@ -109,7 +109,7 @@ const getAdverts = async (req, res, next) => {
     const limit = parseInt(req.query.limit);
     const skip = !isNaN(page) || page !== 1 ? limit * page - limit : 0;
     const fields = req.query.fields;
-    const sort = req.query.sort || { _id: -1 }; // if no sort filter, newest adverts go first
+    const sort = { _id: req.query.sort ? req.query.sort : -1 }; // if no sort filter, newest adverts go first
 
     const filter = {};
 
