@@ -29,7 +29,10 @@ const getByMemberId = async (memberId, filters) => {
   }
 
   const adverts = await Advert.getByMemberId(memberId, filters);
-  const countAllAdverts = await Advert.countWithFilters(filters);
+
+  const countAllAdverts = await Advert.countWithFilters({
+    filter: { member: memberId }
+  });
 
   return { success: true, results: adverts, totalAdverts: countAllAdverts };
 };
