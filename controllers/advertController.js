@@ -29,14 +29,16 @@ const getByMemberId = async (memberId, filters) => {
   }
 
   const adverts = await Advert.getByMemberId(memberId, filters);
+  const countAllAdverts = await Advert.countWithFilters(filters);
 
-  return { success: true, results: adverts };
+  return { success: true, results: adverts, totalAdverts: countAllAdverts };
 };
 
 const getAll = async filters => {
   const adverts = await Advert.listAll(filters);
+  const countAllAdverts = await Advert.countWithFilters(filters);
 
-  return { success: true, results: adverts };
+  return { success: true, results: adverts, totalAdverts: countAllAdverts };
 };
 
 // END: Métodos con lógica de negocio

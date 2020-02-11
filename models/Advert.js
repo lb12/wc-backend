@@ -31,6 +31,14 @@ advertSchema.statics.listAll = function({ filter, skip, limit, fields, sort }) {
 };
 
 /**
+ * Count all the documents
+ */
+advertSchema.statics.countWithFilters = function({filter}) {  
+  const query = Advert.countDocuments(filter);
+  return query.exec();
+}
+
+/**
  * Searchs an advert by his Id
  */
 advertSchema.statics.getById = function(advertId) {
