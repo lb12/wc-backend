@@ -43,6 +43,7 @@ advertSchema.statics.countWithFilters = function({filter}) {
  */
 advertSchema.statics.getById = function(advertId) {
   const query = Advert.findById(advertId);
+  query.populate({ path: "member", select: ["username"] });
   return query.exec();
 };
 
