@@ -1,6 +1,7 @@
 // Node imports
 const express = require("express");
 const logger = require("morgan");
+const path = require('path');
 const createError = require("http-errors");
 
 const app = express();
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // DB connection
 require("./lib/dbConnection");
