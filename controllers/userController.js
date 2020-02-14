@@ -54,6 +54,10 @@ const deleteUserAndAdverts = async userId => {
   };
 };
 
+const existsUser = async ({ username, email }) => {
+  return User.existsUser({ username, email });
+};
+
 const getUser = async (req, res, next) => {
   try {
     const userId = req.params.id || req.apiUserId;
@@ -77,13 +81,22 @@ const updateUser = async (req, res, next) => {
   try {
     validationResult(req).throw();
 
-    const userId = req.params.id;
-    let data = req.body;
+    const { userId } = req;
+    const data = req.body;
 
     if (!dbUtils.isValidId(userId)) {
       return res
         .status(422)
         .json({ success: false, message: "Provide correct User id" });
+    }
+
+    const user = await existsUser(data);
+
+    // Otro usuario con esos campos ya existe, por lo que hay que retornar un error
+    if (user && !user._id.equals(userId)) {
+      return res
+        .status(422)
+        .json({ success: false, message: "Username or email currently used" });
     }
 
     // Hash password if needed
@@ -126,9 +139,10 @@ const unsubscribeUser = async (req, res, next) => {
 };
 
 module.exports = {
-  createUser,
-  readUser,
   getUser,
   updateUser,
-  unsubscribeUser
+  unsubscribeUser,
+  createUser,
+  existsUser,
+  readUser
 };

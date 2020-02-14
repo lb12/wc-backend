@@ -1,53 +1,61 @@
-'use strict';
+"use strict";
 
 // Node imports
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const UserSchema = mongoose.Schema({
-    username: { type: String, unique: true }, // Unique index (usernames should be unique)
-    email: { type: String, unique: true }, // Unique index (emails should be unique)
-    password: String
+  username: { type: String, unique: true }, // Unique index (usernames should be unique)
+  email: { type: String, unique: true }, // Unique index (emails should be unique)
+  password: String
 });
-
 
 /**
  * Get a user by its id
  */
 UserSchema.statics.getUser = function(userId) {
-    const query = User.findById(userId);
-    
-    return query.exec();
+  const query = User.findById(userId);
+
+  return query.exec();
 };
 
 /**
  * Update a user by its id
  */
 UserSchema.statics.updateUser = function(userId, userData) {
-    const query = User.findByIdAndUpdate(userId, userData, { new: true });
+  const query = User.findByIdAndUpdate(userId, userData, { new: true });
 
-    return query.exec();
+  return query.exec();
 };
 
 /**
  * Delete a user by its id
  */
 UserSchema.statics.deleteUser = function(userId) {
-    const query = User.findByIdAndDelete(userId);
+  const query = User.findByIdAndDelete(userId);
 
-    return query.exec();
+  return query.exec();
 };
 
 /**
  * Check if a User field exists or not
  */
 UserSchema.statics.existsField = function(fieldObj) {
-    const query = User.findOne(fieldObj);
+  const query = User.findOne(fieldObj);
 
-    return query.exec();
-}
+  return query.exec();
+};
 
+/**
+ * Checks if a User exists or not
+ */
+UserSchema.statics.existsUser = function({ username, email }) {
+  const query = User.findOne({
+    $or: [{ username }, { email }]
+  });
 
-const User = mongoose.model('User', UserSchema);
+  return query.exec();
+};
+
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

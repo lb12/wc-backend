@@ -44,7 +44,7 @@ const signUp = async (req, res, next) => {
 
     const { username, email, password } = req.body;
 
-    const user = await User.findOne({ $or: [{ username }, { email }] });
+    const user = await userController.existsUser({ username, email });
 
     // El usuario ya existe, por lo que hay que retornar un error
     if (user) {
