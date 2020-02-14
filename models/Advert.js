@@ -33,10 +33,10 @@ advertSchema.statics.listAll = function({ filter, skip, limit, fields, sort }) {
 /**
  * Count all the documents
  */
-advertSchema.statics.countWithFilters = function({filter}) {  
+advertSchema.statics.countWithFilters = function({ filter }) {
   const query = Advert.countDocuments(filter);
   return query.exec();
-}
+};
 
 /**
  * Searchs an advert by his Id
@@ -65,6 +65,14 @@ advertSchema.statics.getByMemberId = function(memberId, { skip, limit }) {
 advertSchema.statics.getDistinctTags = function() {
   const query = Advert.distinct("tags");
   query.sort();
+  return query.exec();
+};
+
+/**
+ * Delete adverts by user id
+ */
+advertSchema.statics.deleteAdvertsByUserId = function(userId) {
+  const query = Advert.deleteMany({ member: userId });
   return query.exec();
 };
 

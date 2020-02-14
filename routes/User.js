@@ -6,6 +6,7 @@ const { check, body } = require('express-validator');
 
 // Own imports
 const userController = require('../controllers/userController');
+const jwtAuth = require("../lib/jwtAuth");
 
 const router = express.Router();
 
@@ -21,8 +22,8 @@ router.put('/:id',
     ],
     userController.updateUser);
 
-// DELETE
-router.delete('/:id', userController.deleteUser);
+// UNSUBSCRIBE user and his/her adverts
+router.delete('/unsubscribe/:id', jwtAuth(),  userController.unsubscribeUser);
 
 
 module.exports = router;
