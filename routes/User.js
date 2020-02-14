@@ -7,6 +7,7 @@ const { check, body } = require('express-validator');
 // Own imports
 const userController = require('../controllers/userController');
 const jwtAuth = require("../lib/jwtAuth");
+const privateZoneAuth = require("../lib/privateZoneAuth");
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.put('/:id',
     userController.updateUser);
 
 // UNSUBSCRIBE user and his/her adverts
-router.delete('/unsubscribe/:id', jwtAuth(),  userController.unsubscribeUser);
+router.delete('/unsubscribe/:userId', jwtAuth(), privateZoneAuth(), userController.unsubscribeUser);
 
 
 module.exports = router;

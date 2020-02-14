@@ -101,14 +101,7 @@ const updateUser = async (req, res, next) => {
 
 const unsubscribeUser = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const apiUserId = req.apiUserId;
-
-    if (apiUserId !== userId) {
-      return res
-        .status(401)
-        .send({ success: false, message: "You are not authorized to do this" });
-    }
+    const { userId } = req;
 
     const result = await deleteUserAndAdverts(userId);
 
