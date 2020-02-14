@@ -28,6 +28,15 @@ UserSchema.statics.updateUser = function(userId, userData) {
 };
 
 /**
+ * Update the password of a user by its id
+ */
+UserSchema.statics.updatePassword = function(userId, hashedPassword) {
+  const query = User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+
+  return query.exec();
+};
+
+/**
  * Delete a user by its id
  */
 UserSchema.statics.deleteUser = function(userId) {

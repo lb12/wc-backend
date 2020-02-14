@@ -36,6 +36,21 @@ router.put(
   userController.updateUser
 );
 
+router.put(
+  "/change-password/:userId",
+  jwtAuth(),
+  privateZoneAuth(),
+  [
+    body("password")
+      .exists({ checkFalsy: true, checkNull: true })
+      .withMessage("Must be a string"),
+    check("password")
+      .isLength({ min: 6 })
+      .withMessage("Password should be at least 6 chars long")
+  ],
+  userController.changePassword
+);
+
 // UNSUBSCRIBE user and his/her adverts
 router.delete(
   "/unsubscribe/:userId",

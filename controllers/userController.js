@@ -112,6 +112,40 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const changePassword = async (req, res, next) => {
+  try {
+    validationResult(req).throw();
+
+    const { userId } = req;
+    const { password } = req.body;
+
+    if (!dbUtils.isValidId(userId)) {
+      return res
+        .status(422)
+        .json({ success: false, message: "Provide correct User id" });
+    }
+
+    // Comprobamos si existe un usuario con ese Id
+    const user = await User.getUser(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User id was not found in database" });
+    }
+
+    const hash = await securityUtils.hashString(password);
+
+    await User.updatePassword(userId, hash);
+
+    return res
+      .status(200)
+      .send({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const unsubscribeUser = async (req, res, next) => {
   try {
     const { userId } = req;
@@ -142,6 +176,7 @@ module.exports = {
   getUser,
   updateUser,
   unsubscribeUser,
+  changePassword,
   createUser,
   existsUser,
   readUser
