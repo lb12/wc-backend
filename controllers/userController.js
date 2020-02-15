@@ -106,7 +106,11 @@ const updateUser = async (req, res, next) => {
 
     const updatedUser = await User.updateUser(userId, data);
 
-    return res.status(200).send({ success: true, result: updatedUser });
+    const token = securityUtils.createUserTokenJWT(userId);
+
+    updatedUser.password = null;
+
+    return res.status(200).send({ success: true, result: { user: updatedUser, token } });
   } catch (error) {
     return next(error);
   }

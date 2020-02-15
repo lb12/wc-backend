@@ -2,7 +2,6 @@
 
 // Node imports
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 
 // Our imports
@@ -26,9 +25,7 @@ const signIn = async (req, res, next) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+    const token = securityUtils.createUserTokenJWT(user._id);
 
     user.password = null;
 
@@ -62,9 +59,7 @@ const signUp = async (req, res, next) => {
       password: hash
     });
 
-    const token = jwt.sign({ _id: createdUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+    const token = securityUtils.createUserTokenJWT(createdUser._id);
 
     createdUser.password = null;
 
