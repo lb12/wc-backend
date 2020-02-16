@@ -45,7 +45,13 @@ router.post('/', multipartMiddleware, jwtAuth(),
     body('for_sale').exists({checkNull: true}).isBoolean().withMessage('Must be a boolean'),
     body('tags').exists({checkFalsy: true, checkNull: true}).withMessage('Not a valid tag'),
     body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage('Must be a number')
-    
 ], advertController.saveAdvert);
+router.put('/:id/:userId', multipartMiddleware, jwtAuth(), privateZoneAuth(), 
+[
+    body('name').exists({checkFalsy: true, checkNull: true}).withMessage('Must be a string'),
+    body('for_sale').exists({checkNull: true}).isBoolean().withMessage('Must be a boolean'),
+    body('tags').exists({checkFalsy: true, checkNull: true}).withMessage('Not a valid tag'),
+    body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage('Must be a number')
+], advertController.updateAdvert);
 
 module.exports = router;

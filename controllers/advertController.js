@@ -188,8 +188,28 @@ const saveAdvert = async (req, res, next) => {
 
     const advert = new Advert(data);
     const savedAdvert = await advert.save();
-    
+
     return res.status(200).send({ success: true, result: savedAdvert });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateAdvert = async (req, res, next) => {
+  try {
+    validationResult(req).throw();
+    const { id } = req.params;
+    let data = req.body;
+
+    const file = req.files;
+
+    if (Object.keys(file).length > 0) {
+      data.photo = filesUtils.getPhotoFilename(file);
+    }
+
+    const updatedAdvert = await Advert.updateAdvert(id, data);
+
+    return res.status(200).send({ success: true, result: updatedAdvert });
   } catch (error) {
     next(error);
   }
@@ -197,68 +217,11 @@ const saveAdvert = async (req, res, next) => {
 
 // END: Métodos fachada
 
-/**
- * POST an advert to the DB
- * @param req receives in req.body all the fields of the advert.
- */
-/* async function saveAdvert(req, next) {
-  try {
-    validationResult(req).throw();
-
-    let data = req.body;
-    const file = req.files;
-
-    const photoObj = getPhotoFileObj(file);
-    data.photo = photoObj.fullname;
-
-    const advert = new Advert(data);
-    const advertSaved = await advert.save();
-
-    // Send message to the RabbitMQ to create a new thumbnail
-    const thumbnailMessage = {
-      info: `${photoObj.fullname} at ${Date.now()}`,
-      image: photoObj,
-      quality: 75
-    };
-    createThumbnail(thumbnailMessage).catch(err => console.log(err));
-
-    return advertSaved;
-  } catch (error) {
-    next(error);
-    return;
-  }
-} */
-
-// Aux methods
-
-/**
- * Get the filename of the advert photo
- * @param file Object with the advert info fields
- */
-/* function getPhotoFileObj(file) {
-  const filePath = file.photo.path;
-  const splittedPath = filePath.split("/");
-
-  const fileName = splittedPath.pop(3);
-  const imagePath = splittedPath.join("/");
-
-  const splittedFileName = fileName.split(".");
-  const fileExtension = splittedFileName[splittedFileName.length - 1];
-
-  const fileObj = {
-    fullname: fileName,
-    name: splittedFileName[0],
-    extension: fileExtension,
-    path: imagePath
-  };
-
-  return fileObj;
-} */
-
 module.exports = {
   getAdverts,
   getAdvertById,
   getAdvertsByMemberId,
   deleteAdvertById,
-  saveAdvert
+  saveAdvert,
+  updateAdvert
 };
