@@ -12,6 +12,8 @@ const advertSchema = mongoose.Schema({
   photo: String,
   tags: { type: [String], index: true },
   description: String,
+  reserved: { type: Boolean, default: false },
+  sold: { type: Boolean, default: false, index: true },
   member: { type: ObjectId, ref: "User", index: true }
 });
 
