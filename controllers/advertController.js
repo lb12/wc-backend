@@ -6,6 +6,7 @@ const { validationResult } = require("express-validator");
 // Our imports
 const Advert = require("../models/Advert");
 const dbUtils = require("../utils/dbUtils");
+const filesUtils = require("../utils/filesUtils");
 
 // START: Métodos con lógica de negocio
 
@@ -42,6 +43,11 @@ const getAll = async filters => {
   const countAllAdverts = await Advert.countWithFilters(filters);
 
   return { success: true, results: adverts, totalAdverts: countAllAdverts };
+};
+
+const deleteAdvert = async advertId => {
+  const advert = await Advert.deleteAdvert(advertId);
+  return { success: true, result: advert };
 };
 
 // END: Métodos con lógica de negocio
@@ -164,6 +170,31 @@ const getAdverts = async (req, res, next) => {
   }
 };
 
+const deleteAdvertById = async (req, res, next) => {
+  const advertId = req.params.id;
+
+  const result = await deleteAdvert(advertId);
+
+  return res.status(200).send(result);
+};
+
+const saveAdvert = async (req, res, next) => {
+  try {
+    validationResult(req).throw();
+    let data = req.body;
+    const file = req.files;
+
+    data.photo = filesUtils.getPhotoFilename(file);
+
+    const advert = new Advert(data);
+    const savedAdvert = await advert.save();
+    
+    return res.status(200).send({ success: true, result: savedAdvert });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // END: Métodos fachada
 
 /**
@@ -227,5 +258,7 @@ const getAdverts = async (req, res, next) => {
 module.exports = {
   getAdverts,
   getAdvertById,
-  getAdvertsByMemberId
+  getAdvertsByMemberId,
+  deleteAdvertById,
+  saveAdvert
 };

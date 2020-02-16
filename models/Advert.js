@@ -76,6 +76,11 @@ advertSchema.statics.deleteAdvertsByUserId = function(userId) {
   return query.exec();
 };
 
+advertSchema.statics.deleteAdvert = function(advertId) {
+  const query = Advert.findByIdAndDelete(advertId);
+  return query;
+}
+
 // Create the Advert Model
 const Advert = mongoose.model("Advert", advertSchema);
 

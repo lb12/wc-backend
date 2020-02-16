@@ -4,9 +4,15 @@
 const express = require("express");
 const { query, body } = require("express-validator");
 
+// Load multipart module
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart({ uploadDir: 'public/images/adverts' });
+
 // Our imports
 const router = express.Router();
 const advertController = require("../controllers/advertController");
+const jwtAuth = require("../lib/jwtAuth");
+const privateZoneAuth = require("../lib/privateZoneAuth");
 
 router.get(
   "/",
@@ -32,5 +38,14 @@ router.get(
 );
 router.get("/:id", advertController.getAdvertById);
 router.get("/member/:memberId", advertController.getAdvertsByMemberId);
+router.delete('/:id/:userId', jwtAuth(), privateZoneAuth(), advertController.deleteAdvertById);
+router.post('/', multipartMiddleware, jwtAuth(), 
+[
+    body('name').exists({checkFalsy: true, checkNull: true}).withMessage('Must be a string'),
+    body('for_sale').exists({checkNull: true}).isBoolean().withMessage('Must be a boolean'),
+    body('tags').exists({checkFalsy: true, checkNull: true}).withMessage('Not a valid tag'),
+    body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage('Must be a number')
+    
+], advertController.saveAdvert);
 
 module.exports = router;
