@@ -11,6 +11,7 @@ const multipartMiddleware = multipart({ uploadDir: 'public/images/adverts' });
 // Our imports
 const router = express.Router();
 const advertController = require("../controllers/advertController");
+const favController = require("../controllers/favController");
 const jwtAuth = require("../lib/jwtAuth");
 const privateZoneAuth = require("../lib/privateZoneAuth");
 
@@ -53,5 +54,6 @@ router.put('/:id/:userId', multipartMiddleware, jwtAuth(), privateZoneAuth(),
     body('tags').exists({checkFalsy: true, checkNull: true}).withMessage('Not a valid tag'),
     body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage('Must be a number')
 ], advertController.updateAdvert);
+router.post('/set-favs/:userId', jwtAuth(), privateZoneAuth(), favController.setAdvertFav);
 
 module.exports = router;

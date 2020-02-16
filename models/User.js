@@ -2,11 +2,13 @@
 
 // Node imports
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema.Types;
 
 const UserSchema = mongoose.Schema({
   username: { type: String, unique: true }, // Unique index (usernames should be unique)
   email: { type: String, unique: true }, // Unique index (emails should be unique)
-  password: String
+  password: String,
+  favs: { type: [{ type: ObjectId, ref: "Advert", index: true }] }
 });
 
 /**
