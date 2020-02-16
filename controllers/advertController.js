@@ -5,6 +5,7 @@ const { validationResult } = require("express-validator");
 
 // Our imports
 const Advert = require("../models/Advert");
+const userController = require("./userController");
 const dbUtils = require("../utils/dbUtils");
 const filesUtils = require("../utils/filesUtils");
 
@@ -36,6 +37,31 @@ const getByMemberId = async (memberId, filters) => {
   });
 
   return { success: true, results: adverts, totalAdverts: countAllAdverts };
+};
+
+const getFavs = async (memberId, { skip, limit }) => {
+  if (!dbUtils.isValidId(memberId)) {
+    return { success: false, message: "Provide correct Member id" };
+  }
+
+  const user = await userController.readUser(memberId);
+
+  // Ha habido un error en la obtencion del usuario, ya trae el mensaje de error, lo devuelvo tal cual.
+  if (user.message) {
+    return user;
+  }
+
+  // Tenemos un array de ids, por lo que tenemos que hacer el paginado manualmente
+  const { favs } = user.result;
+  const totalAdverts = favs.length;
+  const adverts = favs.slice(skip, skip + limit);
+
+  // Obtenemos los datos de los adverts de la pagina correspondiente
+  const results = await Promise.all(
+    adverts.map(async advertId => await Advert.getById(advertId))
+  );
+
+  return { success: true, results, totalAdverts };
 };
 
 const getAll = async filters => {
@@ -88,11 +114,29 @@ const getAdvertsByMemberId = async (req, res, next) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   const skip = !isNaN(page) || page !== 1 ? limit * page - limit : 0;
+  const obtainFavs = req.query.favs === "true";
 
   try {
-    const result = await getByMemberId(memberId, { skip, limit });
+    let result;
 
-    const status = result.message === "Provide correct Member id" ? 422 : 200;
+    if (obtainFavs) {
+      result = await getFavs(memberId, { skip, limit });
+    } else {
+      result = await getByMemberId(memberId, { skip, limit });
+    }
+
+    let status = 200;
+
+    switch (result.message) {
+      case "Provide correct Member id":
+        status = 422;
+        break;
+      case "User id was not found in database":
+        status = 404;
+        break;
+      default:
+        break;
+    }
 
     return res.status(status).send(result);
   } catch (error) {
