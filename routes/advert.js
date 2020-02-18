@@ -55,5 +55,6 @@ router.put('/:id/:userId', multipartMiddleware, jwtAuth(), privateZoneAuth(),
     body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage('Must be a number')
 ], advertController.updateAdvert);
 router.post('/set-favs/:userId', jwtAuth(), privateZoneAuth(), favController.setAdvertFav);
+router.put('/set-reserved-or-sold/:id/:userId', jwtAuth(), privateZoneAuth(), advertController.setReservedOrSoldAdvert);
 
 module.exports = router;

@@ -259,6 +259,19 @@ const updateAdvert = async (req, res, next) => {
   }
 };
 
+const setReservedOrSoldAdvert = async (req, res, next) => {
+  try {
+    const { id } = req.params; 
+    let data = req.body;
+
+    const updatedAdvert = await Advert.updateAdvert(id, data);
+
+    return res.status(200).send({ success: true, result: updatedAdvert });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // END: Métodos fachada
 
 module.exports = {
@@ -267,5 +280,6 @@ module.exports = {
   getAdvertsByMemberId,
   deleteAdvertById,
   saveAdvert,
-  updateAdvert
+  updateAdvert,
+  setReservedOrSoldAdvert
 };
