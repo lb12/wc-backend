@@ -2,7 +2,10 @@
 
 // Load mongoose module
 const mongoose = require("mongoose");
+const slug = require('mongoose-slug-updater');
 const { ObjectId } = mongoose.Schema.Types;
+
+mongoose.plugin(slug);
 
 // Define the Advert schema
 const advertSchema = mongoose.Schema({
@@ -14,8 +17,11 @@ const advertSchema = mongoose.Schema({
   description: String,
   reserved: { type: Boolean, default: false },
   sold: { type: Boolean, default: false, index: true },
-  member: { type: ObjectId, ref: "User", index: true }
+  member: { type: ObjectId, ref: "User", index: true },
+  slug: { type: String, slug: "name", unique: true }
 });
+
+
 
 // Model methods
 

@@ -209,7 +209,8 @@ const getAdverts = async (req, res, next) => {
     filter.sold = false; // Solo mostramos en la búsqueda PÚBLICA aquellos anuncios que NO se han vendido
 
     const result = await getAll({ filter, skip, limit, fields, sort });
-
+    console.log(result);
+    
     return res.status(200).send(result);
   } catch (error) {
     next(error);
