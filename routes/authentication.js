@@ -55,4 +55,19 @@ router.post(
 );
 router.post("/checkToken", jwtAuth(), userController.getUser);
 
+router.post("/forgot-password", authController.forgotPassword);
+router.get("/reset-password", authController.resetPassword);
+router.put(
+  "/update-password",
+  [
+    body("password")
+      .exists({ checkFalsy: true, checkNull: true })
+      .withMessage("Must be a string"),
+    check("password")
+      .isLength({ min: 6 })
+      .withMessage("Password should be at least 6 chars long")
+  ],
+  authController.updatePassword
+);
+
 module.exports = router;

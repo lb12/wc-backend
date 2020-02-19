@@ -58,6 +58,16 @@ const existsUser = async ({ username, email }) => {
   return User.existsUser({ username, email });
 };
 
+const readUserByEmailToken = async (data) => {
+  return await User.findByEmailToken(data);
+}
+
+const updatePassword = async (user, password) => {
+  const hash = await securityUtils.hashString(password);
+
+  return User.updatePassword(user._id, hash);
+}
+
 const getUser = async (req, res, next) => {
   try {
     const userId = req.params.id || req.apiUserId;
@@ -138,9 +148,7 @@ const changePassword = async (req, res, next) => {
         .json({ success: false, message: "User id was not found in database" });
     }
 
-    const hash = await securityUtils.hashString(password);
-
-    await User.updatePassword(userId, hash);
+    await updatePassword(user, password);
 
     return res
       .status(200)
@@ -180,7 +188,9 @@ module.exports = {
   getUser,
   updateUser,
   unsubscribeUser,
+  updatePassword,
   changePassword,
+  readUserByEmailToken,
   createUser,
   existsUser,
   readUser

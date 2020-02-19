@@ -8,7 +8,9 @@ const UserSchema = mongoose.Schema({
   username: { type: String, unique: true }, // Unique index (usernames should be unique)
   email: { type: String, unique: true }, // Unique index (emails should be unique)
   password: String,
-  favs: { type: [{ type: ObjectId, ref: "Advert", index: true }] }
+  favs: { type: [{ type: ObjectId, ref: "Advert", index: true }] },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Number }
 });
 
 /**
@@ -33,7 +35,11 @@ UserSchema.statics.updateUser = function(userId, userData) {
  * Update the password of a user by its id
  */
 UserSchema.statics.updatePassword = function(userId, hashedPassword) {
-  const query = User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+  const query = User.findByIdAndUpdate(
+    userId,
+    { password: hashedPassword },
+    { new: true }
+  );
 
   return query.exec();
 };
@@ -62,6 +68,21 @@ UserSchema.statics.existsField = function(fieldObj) {
 UserSchema.statics.existsUser = function({ username, email }) {
   const query = User.findOne({
     $or: [{ username }, { email }]
+  });
+
+  return query.exec();
+};
+
+/**
+ * Returns an email satifies that token is found and is not expired yet
+ */
+UserSchema.statics.findByEmailToken = function({token, email}) {
+  const query = User.findOne({
+    $and: [
+      { resetPasswordToken: token },
+      { resetPasswordExpires: { $gte: Date.now() } },
+      email ? { email } : {}
+    ]
   });
 
   return query.exec();
