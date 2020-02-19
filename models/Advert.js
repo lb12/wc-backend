@@ -1,13 +1,15 @@
 "use strict";
 
-// Load mongoose module
+// Node imports
 const mongoose = require("mongoose");
-const slug = require('mongoose-slug-updater');
+const slug = require("mongoose-slug-updater"); // Garantizar URL SEO-Friendly
+
+// Imports propios
 const { ObjectId } = mongoose.Schema.Types;
 
+// Añadimos 'slug' como plugin de mongoose
 mongoose.plugin(slug);
 
-// Define the Advert schema
 const advertSchema = mongoose.Schema({
   name: { type: String, index: true },
   for_sale: { type: Boolean, index: true },
@@ -18,15 +20,12 @@ const advertSchema = mongoose.Schema({
   reserved: { type: Boolean, default: false },
   sold: { type: Boolean, default: false, index: true },
   member: { type: ObjectId, ref: "User", index: true },
-  slug: { type: String, slug: "name", unique: true }
+  slug: { type: String, slug: "name", unique: true } // Aplicado al 'name' del anuncio
 });
 
-
-
-// Model methods
-
+// START: *Métodos del modelo*
 /**
- * Lists an array of adverts if found.
+ * Devolver un listado de anuncios en un array
  */
 advertSchema.statics.listAll = function({ filter, skip, limit, fields, sort }) {
   const query = Advert.find(filter);
@@ -39,7 +38,7 @@ advertSchema.statics.listAll = function({ filter, skip, limit, fields, sort }) {
 };
 
 /**
- * Count all the documents
+ * Contar todos los documentos incluidos en una paginación
  */
 advertSchema.statics.countWithFilters = function({ filter }) {
   const query = Advert.countDocuments(filter);
@@ -47,7 +46,7 @@ advertSchema.statics.countWithFilters = function({ filter }) {
 };
 
 /**
- * Searchs an advert by his Id
+ * Busca un anuncio a partir de su id
  */
 advertSchema.statics.getById = function(advertId) {
   const query = Advert.findById(advertId);
@@ -56,7 +55,7 @@ advertSchema.statics.getById = function(advertId) {
 };
 
 /**
- * Lists an array of adverts published by a member Id
+ * Busca todos los anuncios de un usuario a partir del id de este
  */
 advertSchema.statics.getByMemberId = function(memberId, { skip, limit }) {
   const query = Advert.find({ member: memberId });
@@ -68,7 +67,7 @@ advertSchema.statics.getByMemberId = function(memberId, { skip, limit }) {
 };
 
 /**
- * Lists distinct advert tags
+ * Devuelve un listado de todos los tags encontrados en los anuncios
  */
 advertSchema.statics.getDistinctTags = function() {
   const query = Advert.distinct("tags");
@@ -77,26 +76,31 @@ advertSchema.statics.getDistinctTags = function() {
 };
 
 /**
- * Delete adverts by user id
+ * Elimina todos los anuncios a partir del id del usuario creador
  */
 advertSchema.statics.deleteAdvertsByUserId = function(userId) {
   const query = Advert.deleteMany({ member: userId });
   return query.exec();
 };
 
+/**
+ * Elimina un anuncio a partir de su id
+ */
 advertSchema.statics.deleteAdvert = function(advertId) {
   const query = Advert.findByIdAndDelete(advertId);
   return query;
-}
+};
 
+/**
+ * Actualiza los datos de un anuncio a partir de su id
+ */
 advertSchema.statics.updateAdvert = function(advertId, advertData) {
   const query = Advert.findByIdAndUpdate(advertId, advertData, { new: true });
 
   return query.exec();
 };
+// END: *Métodos del modelo*
 
-// Create the Advert Model
 const Advert = mongoose.model("Advert", advertSchema);
 
-// Export Advert Schema
 module.exports = Advert;

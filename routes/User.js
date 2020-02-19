@@ -8,6 +8,7 @@ const { check, body } = require("express-validator");
 const userController = require("../controllers/userController");
 const jwtAuth = require("../lib/jwtAuth");
 const privateZoneAuth = require("../lib/privateZoneAuth");
+const { validation: validationCodes } = require("../utils/dictionary-codes");
 
 const router = express.Router();
 
@@ -22,16 +23,16 @@ router.put(
   [
     body("username")
       .exists({ checkFalsy: true, checkNull: true })
-      .withMessage("Must be a string"),
+      .withMessage(validationCodes.MUST_NOT_BE_EMPTY),
     body("email")
       .exists({ checkFalsy: true, checkNull: true })
-      .withMessage("Must be a string"),
+      .withMessage(validationCodes.MUST_NOT_BE_EMPTY),
     check("email")
       .isEmail()
-      .withMessage("Email format is not correct"),
+      .withMessage(validationCodes.EMAIL_FORMAT_IS_NOT_CORRECT),
     check("username")
       .isLength({ min: 4 })
-      .withMessage("Username should be at least 4 chars long")
+      .withMessage(validationCodes.USERNAME_4_CHARS_LONG)
   ],
   userController.updateUser
 );
@@ -43,10 +44,10 @@ router.put(
   [
     body("password")
       .exists({ checkFalsy: true, checkNull: true })
-      .withMessage("Must be a string"),
+      .withMessage(validationCodes.MUST_NOT_BE_EMPTY),
     check("password")
       .isLength({ min: 6 })
-      .withMessage("Password should be at least 6 chars long")
+      .withMessage(validationCodes.PASSWORD_6_CHARS_LONG)
   ],
   userController.changePassword
 );

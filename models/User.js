@@ -2,23 +2,27 @@
 
 // Node imports
 const mongoose = require("mongoose");
-const slug = require('mongoose-slug-updater');
+const slug = require("mongoose-slug-updater");
+
+// Imports propios
 const { ObjectId } = mongoose.Schema.Types;
 
+// Añadimos 'slug' como plugin de mongoose
 mongoose.plugin(slug);
 
 const UserSchema = mongoose.Schema({
-  username: { type: String, unique: true }, // Unique index (usernames should be unique)
-  email: { type: String, unique: true }, // Unique index (emails should be unique)
+  username: { type: String, unique: true },
+  email: { type: String, unique: true },
   password: String,
-  favs: { type: [{ type: ObjectId, ref: "Advert", index: true }] },
+  favs: { type: [{ type: ObjectId, ref: "Advert" }] },
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Number },
-  slug: { type: String, slug: "username", unique: true }
+  slug: { type: String, slug: "username", unique: true } // Aplicado al 'username' del usuario
 });
 
+// START: *Métodos del modelo*
 /**
- * Get a user by its id
+ * Buscar un usuario a partir de su id
  */
 UserSchema.statics.getUser = function(userId) {
   const query = User.findById(userId);
@@ -27,7 +31,7 @@ UserSchema.statics.getUser = function(userId) {
 };
 
 /**
- * Update a user by its id
+ * Actualizar los datos de un usuario a partir de su id
  */
 UserSchema.statics.updateUser = function(userId, userData) {
   const query = User.findByIdAndUpdate(userId, userData, { new: true });
@@ -36,7 +40,7 @@ UserSchema.statics.updateUser = function(userId, userData) {
 };
 
 /**
- * Update the password of a user by its id
+ * Actualiza la contraseña de un usuario a partir de su id
  */
 UserSchema.statics.updatePassword = function(userId, hashedPassword) {
   const query = User.findByIdAndUpdate(
@@ -49,7 +53,7 @@ UserSchema.statics.updatePassword = function(userId, hashedPassword) {
 };
 
 /**
- * Delete a user by its id
+ * Elimina un usuario a partir de su id
  */
 UserSchema.statics.deleteUser = function(userId) {
   const query = User.findByIdAndDelete(userId);
@@ -58,16 +62,7 @@ UserSchema.statics.deleteUser = function(userId) {
 };
 
 /**
- * Check if a User field exists or not
- */
-UserSchema.statics.existsField = function(fieldObj) {
-  const query = User.findOne(fieldObj);
-
-  return query.exec();
-};
-
-/**
- * Checks if a User exists or not
+ * Comprueba si un usuario existe o no a partir de su username o su email
  */
 UserSchema.statics.existsUser = function({ username, email }) {
   const query = User.findOne({
@@ -78,9 +73,9 @@ UserSchema.statics.existsUser = function({ username, email }) {
 };
 
 /**
- * Returns an email satifies that token is found and is not expired yet
+ * Busca un usuario a partir del token de recuperación de contraseña
  */
-UserSchema.statics.findByEmailToken = function({token, email}) {
+UserSchema.statics.findByEmailToken = function({ token, email }) {
   const query = User.findOne({
     $and: [
       { resetPasswordToken: token },
@@ -91,6 +86,7 @@ UserSchema.statics.findByEmailToken = function({token, email}) {
 
   return query.exec();
 };
+// END: *Métodos del modelo*
 
 const User = mongoose.model("User", UserSchema);
 

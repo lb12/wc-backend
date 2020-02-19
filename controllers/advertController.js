@@ -3,31 +3,40 @@
 // Node imports
 const { validationResult } = require("express-validator");
 
-// Our imports
+// Imports propios
 const Advert = require("../models/Advert");
 const userController = require("./userController");
 const dbUtils = require("../utils/dbUtils");
 const filesUtils = require("../utils/filesUtils");
+const {
+  adverts: advertCodes,
+  users: userCodes
+} = require("../utils/dictionary-codes");
 
-// START: Métodos con lógica de negocio
-
+// *START: Métodos lógica negocio*
+/**
+ * Obtiene un anuncio a partir de su id
+ */
 const getById = async id => {
   if (!dbUtils.isValidId(id)) {
-    return { success: false, message: "Provide correct Advert id" };
+    return { success: false, message: advertCodes.NOT_VALID_ADVERT_ID };
   }
 
   const advert = await Advert.getById(id);
 
   if (!advert) {
-    return { success: false, message: "Advert id was not found in database" };
+    return { success: false, message: advertCodes.ADVERT_NOT_FOUND };
   }
 
   return { success: true, result: advert };
 };
 
+/**
+ * Obtiene todos los anuncios de un usuario a partir del id de este
+ */
 const getByMemberId = async (memberId, filters) => {
   if (!dbUtils.isValidId(memberId)) {
-    return { success: false, message: "Provide correct Member id" };
+    return { success: false, message: userCodes.NOT_VALID_USER_ID };
   }
 
   const adverts = await Advert.getByMemberId(memberId, filters);
@@ -39,9 +48,12 @@ const getByMemberId = async (memberId, filters) => {
   return { success: true, results: adverts, totalAdverts: countAllAdverts };
 };
 
+/**
+ * Obtiene todos los anuncios favoritos de un usuario a partir del id de este
+ */
 const getFavs = async (memberId, { skip, limit }) => {
   if (!dbUtils.isValidId(memberId)) {
-    return { success: false, message: "Provide correct Member id" };
+    return { success: false, message: userCodes.NOT_VALID_USER_ID };
   }
 
   const user = await userController.readUser(memberId);
@@ -64,6 +76,9 @@ const getFavs = async (memberId, { skip, limit }) => {
   return { success: true, results, totalAdverts };
 };
 
+/**
+ * Obtiene todos los anuncios a partir de unos filtros, en caso de que los hubiera
+ */
 const getAll = async filters => {
   const adverts = await Advert.listAll(filters);
   const countAllAdverts = await Advert.countWithFilters(filters);
@@ -71,19 +86,18 @@ const getAll = async filters => {
   return { success: true, results: adverts, totalAdverts: countAllAdverts };
 };
 
+/**
+ * Elimina un anuncio a partir de su id
+ */
 const deleteAdvert = async advertId => {
   const advert = await Advert.deleteAdvert(advertId);
   return { success: true, result: advert };
 };
+// *END: Métodos lógica negocio*
 
-// END: Métodos con lógica de negocio
-
-// START: Métodos fachada
-
+// *START: Métodos fachada*
 /**
- * GET advert info
- * @param id id of the advert
- * @returns Advert info
+ * Obtener un anuncio a partir de su id
  */
 const getAdvertById = async (req, res, next) => {
   const { id } = req.params;
@@ -92,9 +106,9 @@ const getAdvertById = async (req, res, next) => {
     const result = await getById(id);
 
     const status =
-      result.message === "Provide correct Advert id"
+      result.message === advertCodes.NOT_VALID_ADVERT_ID
         ? 422
-        : result.message === "Advert id was not found in database"
+        : result.message === advertCodes.ADVERT_NOT_FOUND
         ? 404
         : 200;
 
@@ -105,9 +119,7 @@ const getAdvertById = async (req, res, next) => {
 };
 
 /**
- * GET adverts created by a member
- * @param memberId id of the member
- * @returns Adverts list
+ * Obtener los anuncios de un usuario
  */
 const getAdvertsByMemberId = async (req, res, next) => {
   const { memberId } = req.params;
@@ -128,10 +140,10 @@ const getAdvertsByMemberId = async (req, res, next) => {
     let status = 200;
 
     switch (result.message) {
-      case "Provide correct Member id":
+      case userCodes.NOT_VALID_USER_ID:
         status = 422;
         break;
-      case "User id was not found in database":
+      case userCodes.USER_NOT_FOUND:
         status = 404;
         break;
       default:
@@ -145,9 +157,7 @@ const getAdvertsByMemberId = async (req, res, next) => {
 };
 
 /**
- * GET adverts from the DB
- * @param req can receive a list of filters and process them to obtain a list of adverts
- * @returns Adverts list
+ * Obtener los anuncios según una lista de filtros si la hubiese
  */
 const getAdverts = async (req, res, next) => {
   try {
@@ -209,13 +219,16 @@ const getAdverts = async (req, res, next) => {
     filter.sold = false; // Solo mostramos en la búsqueda PÚBLICA aquellos anuncios que NO se han vendido
 
     const result = await getAll({ filter, skip, limit, fields, sort });
-    
+
     return res.status(200).send(result);
   } catch (error) {
     next(error);
   }
 };
 
+/**
+ * Eliminar un anuncio a partir de su id
+ */
 const deleteAdvertById = async (req, res, next) => {
   const advertId = req.params.id;
 
@@ -224,6 +237,9 @@ const deleteAdvertById = async (req, res, next) => {
   return res.status(200).send(result);
 };
 
+/**
+ * Guardar un anuncio
+ */
 const saveAdvert = async (req, res, next) => {
   try {
     validationResult(req).throw();
@@ -231,7 +247,7 @@ const saveAdvert = async (req, res, next) => {
     const file = req.files;
 
     data.photo = filesUtils.getPhotoFilename(file);
-    data.tags = data.tags.split(','); // tags need split
+    data.tags = data.tags.split(","); // tags need split
 
     const advert = new Advert(data);
     const savedAdvert = await advert.save();
@@ -242,6 +258,9 @@ const saveAdvert = async (req, res, next) => {
   }
 };
 
+/**
+ * Actualizar un anuncio
+ */
 const updateAdvert = async (req, res, next) => {
   try {
     validationResult(req).throw();
@@ -254,7 +273,7 @@ const updateAdvert = async (req, res, next) => {
       data.photo = filesUtils.getPhotoFilename(file);
     }
 
-    data.tags = data.tags.split(','); // tags need split
+    data.tags = data.tags.split(","); // tags need split
 
     const updatedAdvert = await Advert.updateAdvert(id, data);
 
@@ -264,9 +283,12 @@ const updateAdvert = async (req, res, next) => {
   }
 };
 
+/**
+ * Marcar / Desmarcar un anuncio como reservado o vendido
+ */
 const setReservedOrSoldAdvert = async (req, res, next) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     let data = req.body;
 
     const updatedAdvert = await Advert.updateAdvert(id, data);
@@ -275,9 +297,8 @@ const setReservedOrSoldAdvert = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
-
-// END: Métodos fachada
+};
+// *END: Métodos fachada*
 
 module.exports = {
   getAdverts,

@@ -3,12 +3,21 @@
 // Node imports
 const { validationResult } = require("express-validator");
 
-// Own imports
+// Imports propios
 const User = require("../models/User");
 const Advert = require("../models/Advert");
 const dbUtils = require("../utils/dbUtils");
 const securityUtils = require("../utils/securityUtils");
+const {
+  users: userCodes,
+  actions: actionsCodes,
+  validation: validationCodes
+} = require("../utils/dictionary-codes");
 
+// *START: Métodos lógica negocio*
+/**
+ * Crea un usuario a partir de sus datos
+ */
 const createUser = async userObj => {
   try {
     const user = new User(userObj);
@@ -18,15 +27,18 @@ const createUser = async userObj => {
   }
 };
 
+/**
+ * Obtiene un usuario a partir de su id
+ */
 const readUser = async userId => {
   if (!dbUtils.isValidId(userId)) {
-    return { success: false, message: "Provide correct User id" };
+    return { success: false, message: userCodes.NOT_VALID_USER_ID };
   }
 
   const user = await User.getUser(userId);
 
   if (!user) {
-    return { success: false, message: "User id was not found in database" };
+    return { success: false, message: userCodes.USER_NOT_FOUND };
   }
 
   user.password = null;
@@ -34,40 +46,54 @@ const readUser = async userId => {
   return { success: true, result: user };
 };
 
+/**
+ * Elimina los anuncios de un usuario y a este mismo a partir de su id
+ */
 const deleteUserAndAdverts = async userId => {
   if (!dbUtils.isValidId(userId)) {
-    return { success: false, message: "Provide correct User id" };
+    return { success: false, message: userCodes.NOT_VALID_USER_ID };
   }
 
   const user = await readUser(userId);
 
   if (!user.success) {
-    return { success: false, message: "User id was not found in database" };
+    return { success: false, message: userCodes.USER_NOT_FOUND };
   }
 
   await User.deleteUser(userId);
   await Advert.deleteAdvertsByUserId(userId);
 
-  return {
-    success: true,
-    message: "User and adverts were succesfully removed"
-  };
+  return { success: true, message: userCodes.REMOVED_USER_AND_ADVERTS };
 };
 
+/**
+ * Comprueba si existe un usuario a partir de su username y su email
+ */
 const existsUser = async ({ username, email }) => {
   return User.existsUser({ username, email });
 };
 
-const readUserByEmailToken = async (data) => {
+/**
+ * Obtiene un usuario a partir del token de recuperación de contraseña enviado por email
+ */
+const readUserByEmailToken = async data => {
   return await User.findByEmailToken(data);
-}
+};
 
+/**
+ * Actualiza una contraseña a partir del objeto de su usuario
+ */
 const updatePassword = async (user, password) => {
   const hash = await securityUtils.hashString(password);
 
   return User.updatePassword(user._id, hash);
-}
+};
+// *END: Métodos lógica negocio*
 
+// *START: Métodos fachada (middleware)*
+/**
+ * Obtener un usuario
+ */
 const getUser = async (req, res, next) => {
   try {
     const userId = req.params.id || req.apiUserId;
@@ -75,9 +101,9 @@ const getUser = async (req, res, next) => {
     const result = await readUser(userId);
 
     const status =
-      result.message === "Provide correct User id"
+      result.message === userCodes.NOT_VALID_USER_ID
         ? 422
-        : result.message === "User id was not found in database"
+        : result.message === userCodes.USER_NOT_FOUND
         ? 404
         : 200;
 
@@ -87,6 +113,9 @@ const getUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Actualizar un usuario
+ */
 const updateUser = async (req, res, next) => {
   try {
     validationResult(req).throw();
@@ -97,7 +126,7 @@ const updateUser = async (req, res, next) => {
     if (!dbUtils.isValidId(userId)) {
       return res
         .status(422)
-        .json({ success: false, message: "Provide correct User id" });
+        .json({ success: false, message: userCodes.NOT_VALID_USER_ID });
     }
 
     const user = await existsUser(data);
@@ -106,7 +135,7 @@ const updateUser = async (req, res, next) => {
     if (user && !user._id.equals(userId)) {
       return res
         .status(422)
-        .json({ success: false, message: "Username or email currently used" });
+        .json({ success: false, message: validationCodes.USERNAME_EMAIL_USED });
     }
 
     // Hash password if needed
@@ -120,12 +149,17 @@ const updateUser = async (req, res, next) => {
 
     updatedUser.password = null;
 
-    return res.status(200).send({ success: true, result: { user: updatedUser, token } });
+    return res
+      .status(200)
+      .send({ success: true, result: { user: updatedUser, token } });
   } catch (error) {
     return next(error);
   }
 };
 
+/**
+ * Actualizar contraseña (desde zona privada)
+ */
 const changePassword = async (req, res, next) => {
   try {
     validationResult(req).throw();
@@ -136,7 +170,7 @@ const changePassword = async (req, res, next) => {
     if (!dbUtils.isValidId(userId)) {
       return res
         .status(422)
-        .json({ success: false, message: "Provide correct User id" });
+        .json({ success: false, message: userCodes.NOT_VALID_USER_ID });
     }
 
     // Comprobamos si existe un usuario con ese Id
@@ -145,19 +179,22 @@ const changePassword = async (req, res, next) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User id was not found in database" });
+        .json({ success: false, message: userCodes.USER_NOT_FOUND });
     }
 
     await updatePassword(user, password);
 
     return res
       .status(200)
-      .send({ success: true, message: "Password changed successfully" });
+      .send({ success: true, message: actionsCodes.PASSWORD_WAS_UPDATED });
   } catch (error) {
     next(error);
   }
 };
 
+/**
+ * Dar de baja un usuario
+ */
 const unsubscribeUser = async (req, res, next) => {
   try {
     const { userId } = req;
@@ -167,10 +204,10 @@ const unsubscribeUser = async (req, res, next) => {
     let status;
 
     switch (result.message) {
-      case "Provide correct User id":
+      case userCodes.NOT_VALID_USER_ID:
         status = 422;
         break;
-      case "User id was not found in database":
+      case userCodes.USER_NOT_FOUND:
         status = 404;
         break;
       default:
@@ -183,6 +220,7 @@ const unsubscribeUser = async (req, res, next) => {
     return next(error);
   }
 };
+// *END: Métodos fachada (middleware)*
 
 module.exports = {
   getUser,

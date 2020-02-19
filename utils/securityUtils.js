@@ -5,12 +5,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 /**
- * Hash a plain string 10 rounds
+ * Hashea una contraseña en plano hasta 10 veces
  */
 const hashString = plainString => bcrypt.hash(plainString, 10);
 
 /**
- * Create a new user token JWT
+ * Crea un nuevo token JWT con el _id del usuario pasado como parámetro
  */
 const createUserTokenJWT = userId => {
   return jwt.sign({ _id: userId }, process.env.JWT_SECRET, {

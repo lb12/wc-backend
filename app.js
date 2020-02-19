@@ -6,11 +6,6 @@ const createError = require("http-errors");
 
 const app = express();
 
-// View engine setup
-/* app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
-app.engine('html', require('ejs').__express); */
-
 // Middlewares
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -27,16 +22,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// DB connection
+// Conexión base de datos
 require("./lib/dbConnection");
 
-// API Routes
+// Rutas del API
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/User");
 const advertRouter = require("./routes/advert");
 const tagsRouter = require("./routes/tags");
 const authRouter = require("./routes/authentication");
-const jwtAuth = require("./lib/jwtAuth");
 const apiPath = "/api-v1";
 
 app.use(apiPath + "/auth", authRouter);
@@ -45,7 +39,7 @@ app.use(apiPath + "/adverts", advertRouter);
 app.use(apiPath + "/tags", tagsRouter);
 app.use(apiPath + "/", indexRouter);
 
-// Catch 404 and forward to error handler
+// Captura con un 404 aquellos endpoints no resueltos
 app.use(function(req, res, next) {
   next(createError(404));
 });
