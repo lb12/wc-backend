@@ -7,7 +7,7 @@ const { ObjectId } = mongoose.Schema.Types;
 // Define the Advert schema
 const advertSchema = mongoose.Schema({
   name: { type: String, index: true },
-  for_sale: Boolean,
+  for_sale: { type: Boolean, index: true },
   price: { type: Number, index: true },
   photo: String,
   tags: { type: [String], index: true },
