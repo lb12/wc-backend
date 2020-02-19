@@ -209,7 +209,6 @@ const getAdverts = async (req, res, next) => {
     filter.sold = false; // Solo mostramos en la búsqueda PÚBLICA aquellos anuncios que NO se han vendido
 
     const result = await getAll({ filter, skip, limit, fields, sort });
-    console.log(result);
     
     return res.status(200).send(result);
   } catch (error) {
@@ -232,6 +231,7 @@ const saveAdvert = async (req, res, next) => {
     const file = req.files;
 
     data.photo = filesUtils.getPhotoFilename(file);
+    data.tags = data.tags.split(','); // tags need split
 
     const advert = new Advert(data);
     const savedAdvert = await advert.save();
@@ -253,6 +253,8 @@ const updateAdvert = async (req, res, next) => {
     if (Object.keys(file).length > 0) {
       data.photo = filesUtils.getPhotoFilename(file);
     }
+
+    data.tags = data.tags.split(','); // tags need split
 
     const updatedAdvert = await Advert.updateAdvert(id, data);
 
