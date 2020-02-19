@@ -61,7 +61,7 @@ const signUp = async (req, res, next) => {
     if (user) {
       return res
         .status(422)
-        .json({ success: false, message: authCodes.USERNAME_EMAIL_USED }); //"Username or email currently used"
+        .json({ success: false, message: validationCodes.USERNAME_EMAIL_USED }); //"Username or email currently used"
     }
 
     // Cifra la contraseña

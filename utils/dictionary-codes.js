@@ -29,7 +29,6 @@ module.exports = {
     },
     auth: {
         INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
-        USERNAME_EMAIL_USED: 'USERNAME_EMAIL_USED',
     },
     emails: {
         EMAIL_SENT: 'EMAIL_SENT'
