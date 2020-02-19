@@ -77,8 +77,7 @@ const forgotPassword = async (req, res, next) => {
   const { email } = req.body;
 
   if (!email) {
-    console.error(email);
-    return res.status(400).send("email required");
+    return res.status(400).send({ success: false, message: "Email required"});
   }
 
   try {
@@ -92,11 +91,8 @@ const forgotPassword = async (req, res, next) => {
       }
     );
 
-    console.log(user);
-
     if (!user) {
-      console.error("email not in database");
-      return res.status(403).send("email not in db");
+      return res.status(403).send({ success: false, message: "Email not found"});
     }
 
     const transporter = nodemailer.createTransport({
@@ -108,7 +104,7 @@ const forgotPassword = async (req, res, next) => {
     });
 
     const mailOptions = {
-      from: "noSqlDemoEmail@gmail.com",
+      from: "password-recovery@gmail.com",
       to: `${user.email}`,
       subject: "Link To Reset Password",
       text:
@@ -118,35 +114,24 @@ const forgotPassword = async (req, res, next) => {
         "If you did not request this, please ignore this email and your password will remain unchanged.\n"
     };
 
-    console.log("sending mail");
-
-    transporter.sendMail(mailOptions, (err, response) => {
-      if (err) {
-        console.error("there was an error: ", err);
-      } else {
-        console.log("here is the res: ", response);
-        res.status(200).json("recovery email sent");
-      }
-    });
+    await transporter.sendMail(mailOptions);    
+    res.status(200).json({ success: true, message: 'Recovery email has been sent' });
   } catch (error) {
     next(error);
   }
 };
 
 const resetPassword = async (req, res, next) => {
-  const token = req.query.token;
+  const { token } = req.query;
 
-  // Buscar un usuario que tenga el token en cuestion
   const user = await userController.readUserByEmailToken({ token });
-  console.log(user);
-  // Si no lo encontramos, devolver un success false con message incluido
+  
   if (!user) {
     return res
       .status(403)
       .send({ success: false, message: "Token is invalid or has expired" });
   }
 
-  // Si lo encontramos, devolver el email y success = true.
   return res.status(200).send({ success: true, result: { email: user.email } });
 };
 
@@ -156,10 +141,8 @@ const updatePassword = async (req, res, next) => {
 
     const { email, password, token } = req.body;
 
-    // buscar al usuario por email y token
     const user = await userController.readUserByEmailToken({ token, email });
 
-    // si no lo encuentra, sacar un error con success false y message.
     if (!user) {
       return res
         .status(403)
@@ -169,7 +152,6 @@ const updatePassword = async (req, res, next) => {
     // si lo encuentra, actualizar la contraseña con la que te pasan.
     const updatedUserPass = await userController.updatePassword(user, password);
 
-    // si no ha ido bien, sacar un error con success false y message.
     if (!updatedUserPass) {
       return res.status(500).send({
         success: false,
@@ -177,15 +159,15 @@ const updatePassword = async (req, res, next) => {
       });
     }
 
-    // si esta actualizacion ha ido bien, eliminar los tokens y retornar success = true y un mensaje
+    res
+      .status(200)
+      .send({ success: true, message: "Password was updated succesfully" });
+
+    // limpiamos los tokens del usuario en la base de datos en paralelo
     await User.findOneAndUpdate(
       { email },
       { resetPasswordToken: null, resetPasswordExpires: null }
-    );
-
-    return res
-      .status(200)
-      .send({ success: true, message: "Password was updated succesfully" });
+    );    
   } catch (error) {
     next(error);
   }
