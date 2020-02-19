@@ -33,7 +33,7 @@ advertSchema.statics.listAll = function({ filter, skip, limit, fields, sort }) {
   query.skip(skip);
   query.limit(limit);
   query.select(fields);
-  query.populate({ path: "member", select: ["username"] });
+  query.populate({ path: "member", select: ["username", "slug"] });
   query.sort(sort);
   return query.exec();
 };
@@ -51,7 +51,7 @@ advertSchema.statics.countWithFilters = function({ filter }) {
  */
 advertSchema.statics.getById = function(advertId) {
   const query = Advert.findById(advertId);
-  query.populate({ path: "member", select: ["username"] });
+  query.populate({ path: "member", select: ["username", "slug"] });
   return query.exec();
 };
 
@@ -62,7 +62,7 @@ advertSchema.statics.getByMemberId = function(memberId, { skip, limit }) {
   const query = Advert.find({ member: memberId });
   query.skip(skip);
   query.limit(limit);
-  query.populate({ path: "member", select: ["username"] });
+  query.populate({ path: "member", select: ["username", "slug"] });
   query.sort({ _id: -1 });
   return query.exec();
 };

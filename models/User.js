@@ -2,7 +2,10 @@
 
 // Node imports
 const mongoose = require("mongoose");
+const slug = require('mongoose-slug-updater');
 const { ObjectId } = mongoose.Schema.Types;
+
+mongoose.plugin(slug);
 
 const UserSchema = mongoose.Schema({
   username: { type: String, unique: true }, // Unique index (usernames should be unique)
@@ -10,7 +13,8 @@ const UserSchema = mongoose.Schema({
   password: String,
   favs: { type: [{ type: ObjectId, ref: "Advert", index: true }] },
   resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Number }
+  resetPasswordExpires: { type: Number },
+  slug: { type: String, slug: "username", unique: true }
 });
 
 /**
