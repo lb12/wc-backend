@@ -230,11 +230,23 @@ const getAdverts = async (req, res, next) => {
  * Eliminar un anuncio a partir de su id
  */
 const deleteAdvertById = async (req, res, next) => {
-  const advertId = req.params.id;
+  try {
+    const advertId = req.params.id;
 
-  const result = await deleteAdvert(advertId);
-
-  return res.status(200).send(result);
+    if (!dbUtils.isValidId(advertId)) {
+      return res.status(422).send({ success: false, message: advertCodes.NOT_VALID_ADVERT_ID });
+    }
+  
+    // Eliminar también el anuncio de los favoritos de otros usuarios
+    await userController.popAdvertFromFavLists(advertId);
+    
+    // Finalmente eliminar el anucio
+    const result = await deleteAdvert(advertId);
+  
+    return res.status(200).send(result);    
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**

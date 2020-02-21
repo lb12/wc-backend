@@ -86,6 +86,15 @@ UserSchema.statics.findByEmailToken = function({ token, email }) {
 
   return query.exec();
 };
+
+/**
+ * Elimina el anuncio de todas las listas de favoritos
+ */
+UserSchema.statics.popAdvertFromFavLists = function(advertId) {
+  const query = User.updateMany({}, { $pullAll: { favs: [advertId] } });
+
+  return query.exec();
+};
 // END: *Métodos del modelo*
 
 const User = mongoose.model("User", UserSchema);

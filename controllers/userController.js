@@ -63,8 +63,15 @@ const deleteUserAndAdverts = async userId => {
   await User.deleteUser(userId);
   await Advert.deleteAdvertsByUserId(userId);
 
-  return { success: true, message: userCodes.REMOVED_USER_AND_ADVERTS };
+  return { success: true, message: actionsCodes.REMOVED_USER_AND_ADVERTS };
 };
+
+/**
+ * Elimina el anuncio de todas las listas de favoritos de los usuarios
+ */
+const popAdvertFromFavLists = async advertId => {
+  await User.popAdvertFromFavLists(advertId);
+}
 
 /**
  * Comprueba si existe un usuario a partir de su username y su email
@@ -226,10 +233,11 @@ module.exports = {
   getUser,
   updateUser,
   unsubscribeUser,
-  updatePassword,
   changePassword,
+  updatePassword,
   readUserByEmailToken,
   createUser,
   existsUser,
-  readUser
+  readUser,
+  popAdvertFromFavLists
 };
