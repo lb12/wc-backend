@@ -44,6 +44,7 @@ router.delete('/:id/:userId', jwtAuth(), privateZoneAuth(), advertController.del
 router.post('/', multipartMiddleware, jwtAuth(), 
 [
     body('name').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.MUST_NOT_BE_EMPTY),
+    body('description').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.MUST_NOT_BE_EMPTY),
     body('for_sale').exists({checkNull: true}).isBoolean().withMessage(validationCodes.MUST_BE_BOOLEAN),
     body('tags').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.TAG_NOT_VALID),
     body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage(validationCodes.MUST_BE_NUMBER)
@@ -51,6 +52,7 @@ router.post('/', multipartMiddleware, jwtAuth(),
 router.put('/:id/:userId', multipartMiddleware, jwtAuth(), privateZoneAuth(), 
 [
     body('name').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.MUST_NOT_BE_EMPTY),
+    body('description').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.MUST_NOT_BE_EMPTY),
     body('for_sale').exists({checkNull: true}).isBoolean().withMessage(validationCodes.MUST_BE_BOOLEAN),
     body('tags').exists({checkFalsy: true, checkNull: true}).withMessage(validationCodes.TAG_NOT_VALID),
     body('price').exists({checkFalsy: true, checkNull: true}).isNumeric().withMessage(validationCodes.MUST_BE_NUMBER)
