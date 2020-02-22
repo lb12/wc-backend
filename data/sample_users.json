@@ -1,0 +1,26 @@
+[
+  {
+    "username": "user",
+    "email": "user@example.com",
+    "password": "123456789",
+    "slug": "user"
+  },
+  {
+    "username": "lb12",
+    "email": "david.escribanor@gmail.com",
+    "password": "123456789",
+    "slug": "lb12"
+  },
+  {
+    "username": "c.guerra",
+    "email": "c.guerra@wallaclone.keepcoding",
+    "password": "123456789",
+    "slug": "c-guerra"
+  },
+  {
+    "username": "d.escribano",
+    "email": "d.escribano@ticjob.es",
+    "password": "123456789",
+    "slug": "d-escribano"
+  }
+]

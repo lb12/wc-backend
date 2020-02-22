@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Pato de goma",
+    "for_sale": true,
+    "price": 1.95,
+    "photo": "pato_de_goma.webp",
+    "description": "Gracioso patito de goma con gafas de sol ideal para la bañera o la piscina. Está completamente nuevo.",
+    "slug": "patito-de-goma-de-juguete"
+  },
+  {
+    "name": "Pato hinchable de piscina",
+    "for_sale": false,
+    "price": 15,
+    "photo": "pato_hinchable-de-piscina.webp",
+    "description": "Busco hinchable gigante de 1,50 metros de largo con forma de patito de goma. En su caja, sin ningún tipo de pérdida de aire y en perfectas condiciones.",
+    "slug": "pato-hinchable-de-piscina"
+  },
+  {
+    "name": "Portafotos infantil con patito",
+    "for_sale": true,
+    "price": 9.9,
+    "photo": "portafotos-infantil-con-patito.webp",
+    "description": "Caja que porta álbumes de fotos, motivo infantil (patito de goma). Ideal para regalo de recién nacido. Todo lo que vendo es para recaudar fondos para los animales que rescato de la calle. Si llevas algo más de mi perfil te hago descuento. Hago envíos",
+    "slug": "portafotos-infantil-con-patito"
+  },
+  {
+    "name": "Pato de goma árbitro",
+    "for_sale": false,
+    "price": 3,
+    "photo": "patito-de-goma-arbitro.webp",
+    "description": "Busco este gracioso patito de goma para terminar mi colección friki de patitos. Se supone que con esto ya sabré debuguear del todo mi código... Este patito será mi salvación en el curro o eso dice mi jefe. No te voy a dar más de 3 euros, no es negociable.",
+    "slug": "patito-de-goma-arbitro"
+  },
+  {
+    "name": "Camiseta de patitos",
+    "for_sale": false,
+    "price": 5.95,
+    "photo": "camiseta-de-patitos.jpg",
+    "description": "Busco una camiseta Blanca de patitos.unisex.talla 10/12años.nueva sin estrenar.",
+    "slug": "camiseta-de-patitos"
+  },
+  {
+    "name": "Mochila patitos blythe barbie o similar",
+    "for_sale": true,
+    "price": 6,
+    "photo": "mochila-patitos-blythe-barbie-o-similar.webp",
+    "description": "Preciosa mochila para blythe.",
+    "slug": "mochila-patitos-blythe-barbie-o-similar"
+  },
+  {
+    "name": "Mochila Granja Patito",
+    "for_sale": false,
+    "price": 2,
+    "photo": "mochila-granja-patito.png",
+    "description": "Busco a alguien que tenga esta mochila-bolsa.",
+    "slug": "mochila-granja-patito"
+  },
+  {
+    "name": "Calcetines con estampados",
+    "for_sale": true,
+    "price": 2,
+    "photo": "calcetines-con-patitos.png",
+    "description": "Hilo de color Azul Marino y Amarillo. Estampado de patitos. Calcetines de Caña Baja, fabricados en Portugal, con algodón OEKO-TEX®. Composición: - 80% Algodón egipcio - 16% Poliamida y 4% Lycra",
+    "slug": "calcetines-con-patitos"
+  },
+  {
+    "name": "Bañador de patos hombre",
+    "for_sale": true,
+    "price": 42.9,
+    "photo": "banador-patos-hombre.jpg",
+    "description": "Bañador Patos Hombre ⎮ 100% poliéster",
+    "slug": "banador-patos-hombre"
+  }
+]
