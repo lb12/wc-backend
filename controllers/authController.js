@@ -3,7 +3,7 @@
 // Node imports
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const sendgridMail = require("@sendgrid/mail");
 const { validationResult } = require("express-validator");
 
 // Imports propios
@@ -115,26 +115,21 @@ const forgotPassword = async (req, res, next) => {
         .send({ success: false, message: userCodes.USER_NOT_FOUND });
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: `${process.env.EMAIL_ADDRESS}`,
-        pass: `${process.env.EMAIL_PASSWORD}`
-      }
-    });
+    sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    const mailOptions = {
-      from: "password-recovery@gmail.com",
+    const msg = {
+      from: "password-recovery@depatitos.com",
       to: `${user.email}`,
       subject: "Restart password",
       text:
         "You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n" +
         "Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n" +
-        `http://localhost:3001/reset-password/${token}\n\n` +
+        `http://localhost:3000/reset-password/${token}\n\n` +
         "If you did not request this, please ignore this email and your password will remain unchanged.\n"
     };
 
-    await transporter.sendMail(mailOptions);
+    await sendgridMail.send(msg);
+
     res.status(200).json({ success: true, message: emailCodes.EMAIL_SENT });
   } catch (error) {
     next(error);
