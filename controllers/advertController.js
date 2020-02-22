@@ -10,7 +10,8 @@ const dbUtils = require("../utils/dbUtils");
 const filesUtils = require("../utils/filesUtils");
 const {
   adverts: advertCodes,
-  users: userCodes
+  users: userCodes,
+  validation: validationCodes
 } = require("../utils/dictionary-codes");
 
 // *START: Métodos lógica negocio*
@@ -257,6 +258,10 @@ const saveAdvert = async (req, res, next) => {
     validationResult(req).throw();
     let data = req.body;
     const file = req.files;
+    
+    if (Object.keys(file).length === 0) {
+      return res.status(422).send({ success: false, message: validationCodes.PHOTO_FILE_IS_MANDATORY });
+    }
 
     data.photo = filesUtils.getPhotoFilename(file);
     data.tags = data.tags.split(","); // tags need split
@@ -278,7 +283,6 @@ const updateAdvert = async (req, res, next) => {
     validationResult(req).throw();
     const { id } = req.params;
     let data = req.body;
-
     const file = req.files;
 
     if (Object.keys(file).length > 0) {
