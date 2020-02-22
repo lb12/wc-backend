@@ -3,7 +3,7 @@
     "name": "Pato de goma",
     "for_sale": true,
     "price": 1.95,
-    "photo": "pato_de_goma.webp",
+    "photo": "pato_de_goma.png",
     "description": "Gracioso patito de goma con gafas de sol ideal para la bañera o la piscina. Está completamente nuevo.",
     "slug": "patito-de-goma-de-juguete"
   },
@@ -11,7 +11,7 @@
     "name": "Pato hinchable de piscina",
     "for_sale": false,
     "price": 15,
-    "photo": "pato_hinchable-de-piscina.webp",
+    "photo": "pato_hinchable-de-piscina.png",
     "description": "Busco hinchable gigante de 1,50 metros de largo con forma de patito de goma. En su caja, sin ningún tipo de pérdida de aire y en perfectas condiciones.",
     "slug": "pato-hinchable-de-piscina"
   },
@@ -19,7 +19,7 @@
     "name": "Portafotos infantil con patito",
     "for_sale": true,
     "price": 9.9,
-    "photo": "portafotos-infantil-con-patito.webp",
+    "photo": "portafotos-infantil-con-patito.png",
     "description": "Caja que porta álbumes de fotos, motivo infantil (patito de goma). Ideal para regalo de recién nacido. Todo lo que vendo es para recaudar fondos para los animales que rescato de la calle. Si llevas algo más de mi perfil te hago descuento. Hago envíos",
     "slug": "portafotos-infantil-con-patito"
   },
@@ -27,7 +27,7 @@
     "name": "Pato de goma árbitro",
     "for_sale": false,
     "price": 3,
-    "photo": "patito-de-goma-arbitro.webp",
+    "photo": "patito-de-goma-arbitro.png",
     "description": "Busco este gracioso patito de goma para terminar mi colección friki de patitos. Se supone que con esto ya sabré debuguear del todo mi código... Este patito será mi salvación en el curro o eso dice mi jefe. No te voy a dar más de 3 euros, no es negociable.",
     "slug": "patito-de-goma-arbitro"
   },
@@ -43,7 +43,7 @@
     "name": "Mochila patitos blythe barbie o similar",
     "for_sale": true,
     "price": 6,
-    "photo": "mochila-patitos-blythe-barbie-o-similar.webp",
+    "photo": "mochila-patitos-blythe-barbie-o-similar.png",
     "description": "Preciosa mochila para blythe.",
     "slug": "mochila-patitos-blythe-barbie-o-similar"
   },
