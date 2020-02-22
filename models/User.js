@@ -15,8 +15,8 @@ const UserSchema = mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   favs: { type: [{ type: ObjectId, ref: "Advert" }] },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Number },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Number, default: null },
   slug: { type: String, slug: "username", unique: true } // Aplicado al 'username' del usuario
 });
 
