@@ -40,6 +40,12 @@ const getByMemberId = async (memberId, filters) => {
     return { success: false, message: userCodes.NOT_VALID_USER_ID };
   }
 
+  const user = userController.readUser(memberId);
+
+  if (!user) {
+    return { success: false, message: userCodes.USER_NOT_FOUND };
+  }
+
   const adverts = await Advert.getByMemberId(memberId, filters);
 
   const countAllAdverts = await Advert.countWithFilters({
