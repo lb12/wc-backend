@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
-    "db_init": "node ./lib/installDb"
+    "db_init": "node ./lib/installDb classicDb",
+    "db_init_test": "node ./lib/installDb testDb",
+    "test": "mocha '__tests__/testApi.js'"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,8 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "nodemon": "^1.19.4"
+    "mocha": "^7.0.1",
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2"
   }
 }
