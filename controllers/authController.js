@@ -10,6 +10,7 @@ const { validationResult } = require("express-validator");
 const User = require("../models/User");
 const userController = require("./userController");
 const securityUtils = require("../utils/securityUtils");
+const mailTemplates = require('../utils/mailTemplates');
 const {
   users: userCodes,
   auth: authCodes,
@@ -117,16 +118,7 @@ const forgotPassword = async (req, res, next) => {
 
     sendgridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    const msg = {
-      from: "password-recovery@depatitos.com",
-      to: `${user.email}`,
-      subject: "Restart password",
-      text:
-        "You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n" +
-        "Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n" +
-        `http://localhost:3000/reset-password/${token}\n\n` +
-        "If you did not request this, please ignore this email and your password will remain unchanged.\n"
-    };
+    const msg = mailTemplates.RECOVER_PASSWORD(user.email, token);
 
     await sendgridMail.send(msg);
 
