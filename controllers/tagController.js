@@ -35,7 +35,6 @@ const createTag = async value => {
 const getTags = async (req, res, next) => {
   try {
     const result = await getDistinctTags();
-    console.log(result);
     const status = result ? 200 : 500;
 
     return res.status(status).send(result);
