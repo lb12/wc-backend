@@ -34,7 +34,7 @@ const setAdvertFav = async (req, res, next) => {
 
     if (result.message === userCodes.NOT_VALID_USER_ID) {
       return res
-        .status(200)
+        .status(422)
         .send({ success: false, message: userCodes.NOT_VALID_USER_ID });
     }
 

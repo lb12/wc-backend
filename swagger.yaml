@@ -1,0 +1,578 @@
+swagger: "2.0"
+info:
+  author: "David Escribano Rodríguez"
+  version: "1.0.0"
+  title: "Depatitos API Doc"
+  description: "Minimal documentation of the Depatitos API. You can find more information about the project on the [GitHub project URL](https://github.com/lb12/wc-backend)."
+  contact:
+    email: "david.escribanor@gmail.com"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+basePath: "/api-v1"
+tags:
+  - name: "Users"
+    description: "Operations about the users"
+  - name: "Adverts"
+    description: "Operations about the adverts"
+  - name: "Tags"
+    description: "Operations about the tags"
+schemes:
+  - "http"
+  - "https"
+securityDefinitions:
+  JWT:
+    type: apiKey
+    name: Authorization
+    in: header
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+paths:
+  /auth/signin:
+    post:
+      tags:
+        - "Users"
+      summary: "Login method that returns a valid JWT token. "
+      parameters:
+        - in: "body"
+          name: "body"
+          description: 'User that we want to authenticate. Try it out with "user@example.com":"123456789"'
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successfull operation"
+        422:
+          description: "Invalid credentials"
+        500:
+          description: "Internal server error"
+  /auth/signup:
+    post:
+      tags:
+        - "Users"
+      summary: "Register method that saves a new user and returns a valid JWT token. "
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User that we want to create."
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successfull operation"
+        422:
+          description: "Invalid credentials or Username or email are currently in use"
+        500:
+          description: "Internal server error"
+  /auth/checkToken:
+    post:
+      tags:
+        - "Users"
+      summary: "Checks token and returns the user object."
+      security:
+        - JWT: []
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        404:
+          description: "User not found"
+        422:
+          description: "User id is not valid"
+        500:
+          description: "Internal server error"
+
+  /user/{id}:
+    get:
+      tags:
+        - "Users"
+      summary: "Checks token and returns the user object."
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: "string"
+          description: "Member id"
+      responses:
+        200:
+          description: "Successfull operation"
+        404:
+          description: "User not found"
+        422:
+          description: "User id is not valid"
+        500:
+          description: "Internal server error"
+  /user/{userId}:
+    put:
+      tags:
+        - "Users"
+      summary: "Updates the email and the username of the user"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "Member id"
+        - in: "body"
+          name: "body"
+          description: "User that we want to update."
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        422:
+          description: "User id is not valid or Username or email are currently in use"
+        500:
+          description: "Internal server error"
+  /user/change-password/{userId}:
+    put:
+      tags:
+        - "Users"
+      summary: "Updates the password of a member. Send only the password"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "Member id"
+        - in: "body"
+          name: "body"
+          description: "User that we want to update password. Send only the password property."
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        404:
+          description: "User not found"
+        422:
+          description: "User id is not valid"
+        500:
+          description: "Internal server error"
+  /user/unsubscribe/{userId}:
+    delete:
+      tags:
+        - "Users"
+      summary: "Delete a user from its id"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "Member id"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        404:
+          description: "User not found"
+        422:
+          description: "User id is not valid"
+        500:
+          description: "Internal server error"
+
+  /adverts:
+    get:
+      tags:
+        - "Adverts"
+      summary: "Returns adverts list in system with pagination and filtering chance"
+      parameters:
+        - name: "name"
+          in: "query"
+          description: "Adverts starting name"
+          required: false
+          type: "string"
+        - name: "for_sale"
+          in: "query"
+          description: "For sale or wanted adverts"
+          required: false
+          type: "boolean"
+        - name: "price"
+          in: "query"
+          description: "Price filter (min, max) e.g. : '50-100' or '50-' or '-50' or '50'"
+          required: false
+          type: "string"
+        - name: "tag"
+          in: "query"
+          description: "Adverts tags e.g: (motor, lifestyle, mobile, work)"
+          required: false
+          type: "string"
+        - name: "page"
+          in: "query"
+          description: "Number of the page of the adverts"
+          required: false
+          type: "integer"
+          format: "int32"
+        - name: "limit"
+          in: "query"
+          description: "Number of adverts returned"
+          required: false
+          type: "integer"
+          format: "int32"
+        - name: "sort"
+          in: "query"
+          description: "Advert fields to sort by. You can use white blanks to sort by more than one."
+          required: false
+          type: "string"
+      responses:
+        200:
+          description: "successfull operation"
+          schema:
+            $ref: "#/definitions/Adverts"
+        500:
+          description: "Internal server error"
+    post:
+      tags:
+        - "Adverts"
+      summary: "Create a new advert in system"
+      security:
+        - JWT: []
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: "formData"
+          name: "name"
+          type: "string"
+          description: "Advert name"
+        - in: "formData"
+          name: "description"
+          type: "string"
+          description: "Advert description"
+        - in: "formData"
+          name: "for_sale"
+          type: "boolean"
+          description: "Advert forSale"
+        - in: "formData"
+          name: "price"
+          type: "int32"
+          description: "Advert price"
+        - in: "formData"
+          name: "tags"
+          type: "array"
+          items:
+            type: "string"
+          description: "Advert tags"
+        - in: "formData"
+          name: "member"
+          type: "string"
+          description: "Advert member creator"
+        - in: formData
+          name: "photo"
+          type: file
+          description: "Advert photo"
+      responses:
+        200:
+          description: "Successfull operation"
+          schema:
+            $ref: "#/definitions/Advert"
+        401:
+          description: "No token provided or expired token"
+        422:
+          description: "Product photo is mandatory"
+        500:
+          description: "Internal server error"
+  /adverts/{id}:
+    get:
+      tags:
+        - "Adverts"
+      summary: "Obtains an advert by its id"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: "string"
+          description: "Advert id"
+      responses:
+        200:
+          description: "Successfull operation"
+        404:
+          description: "Advert not found"
+        422:
+          description: "Advert id is not valid"
+        500:
+          description: "Internal server error"
+  /adverts/member/{memberId}:
+    get:
+      tags:
+        - "Adverts"
+      summary: "Obtains a list of adverts by their user id"
+      parameters:
+        - in: path
+          name: memberId
+          required: true
+          type: "string"
+          description: "Member id"
+      responses:
+        200:
+          description: "Successfull operation"
+        404:
+          description: "Advert not found"
+        422:
+          description: "Advert id is not valid"
+        500:
+          description: "Internal server error"
+  /adverts/{id}/{userId}:
+    delete:
+      tags:
+        - "Adverts"
+      summary: "Delete an advert by its id"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: "string"
+          description: "Advert id"
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "Member id"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        422:
+          description: "Advert id is not valid"
+        500:
+          description: "Internal server error"
+    put:
+      tags:
+        - "Adverts"
+      summary: "Updates an existing advert in system. You have to set the same value on the fields you don't want to change."
+      security:
+        - JWT: []
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: "string"
+          description: "Advert id"
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "Member id"
+        - in: "formData"
+          name: "name"
+          type: "string"
+          description: "Advert name"
+        - in: "formData"
+          name: "description"
+          type: "string"
+          description: "Advert description"
+        - in: "formData"
+          name: "for_sale"
+          type: "boolean"
+          description: "Advert forSale"
+        - in: "formData"
+          name: "price"
+          type: "int32"
+          description: "Advert price"
+        - in: "formData"
+          name: "tags"
+          type: "array"
+          items:
+            type: "string"
+          description: "Advert tags"
+        - in: "formData"
+          name: "member"
+          type: "string"
+          description: "Advert member creator"
+        - in: formData
+          name: "photo"
+          type: file
+          description: "Advert photo"
+      responses:
+        200:
+          description: "Successfull operation"
+          schema:
+            $ref: "#/definitions/Advert"
+        401:
+          description: "No token provided or expired token"
+        422:
+          description: "Wrong parameter added"
+        500:
+          description: "Internal server error"
+  /adverts/set-favs/{userId}:
+    post:
+      tags:
+        - "Adverts"
+      summary: "Set the new favs array of the user"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "User id"
+        - in: "body"
+          name: "body"
+          description: "Favs array to be set. Send only the favs property."
+          schema:
+            $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        422:
+          description: "User id is not valid"
+        500:
+          description: "Internal server error"
+  /adverts/set-reserved-or-sold/{id}/{userId}:
+    put:
+      tags:
+        - "Adverts"
+      summary: "Set the new reserved or sold property of the advert"
+      security:
+        - JWT: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: "string"
+          description: "Advert id"
+        - in: path
+          name: userId
+          required: true
+          type: "string"
+          description: "User id"
+        - in: "body"
+          name: "body"
+          description: "Advert that we want to set reserved or sold. Send only the propertly property."
+          schema:
+            $ref: "#/definitions/Advert"
+      responses:
+        200:
+          description: "Successfull operation"
+        401:
+          description: "No token provided or expired token"
+        500:
+          description: "Internal server error"
+
+  /tags:
+    get:
+      tags:
+        - "Tags"
+      summary: "Returns all the tags in system"
+      responses:
+        200:
+          description: "successfull operation"
+          schema:
+            $ref: "#/definitions/Tags"
+        500:
+          description: "Internal server error"
+    post:
+      tags:
+        - "Tags"
+      summary: "Save a new tag in the database"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Tag that we want to create"
+          schema:
+            $ref: "#/definitions/Tag"
+      responses:
+        200:
+          description: "successfull operation"
+          schema:
+            $ref: "#/definitions/Tag"
+        422:
+          description: "Field must not be empty"
+        500:
+          description: "Internal server error"
+
+definitions:
+  Advert:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      for_sale:
+        type: "boolean"
+      price:
+        type: "number"
+      photo:
+        type: "string"
+      tags:
+        type: "array"
+        items:
+          type: "string"
+      description:
+        type: "string"
+      reserved:
+        type: "boolean"
+      sold:
+        type: "boolean"
+      member:
+        type: "string"
+      slug:
+        type: "string"
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      favs:
+        type: "array"
+        items:
+          type: "string"
+      resetPasswordToken:
+        type: "string"
+      resetPasswordExpires:
+        type: "number"
+      slug:
+        type: "string"
+  Tag:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+  Adverts:
+    type: "object"
+    properties:
+      adverts:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/Advert"
+  Users:
+    type: "object"
+    properties:
+      users:
+        type: "object"
+        additionalProperties:
+          $ref: "#/definitions/User"
+  Tags:
+    type: "object"
+    properties:
+      tags:
+        type: "array"
+        items:
+          type: "object"
+          additionalProperties:
+            $ref: "#/definitions/Tag"

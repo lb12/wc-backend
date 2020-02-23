@@ -3,6 +3,9 @@ const express = require("express");
 const logger = require("morgan");
 const path = require('path');
 const createError = require("http-errors");
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerConfig = YAML.load('./swagger.yaml');
 
 const app = express();
 
@@ -38,6 +41,10 @@ app.use(apiPath + "/user", userRouter);
 app.use(apiPath + "/adverts", advertRouter);
 app.use(apiPath + "/tags", tagsRouter);
 app.use(apiPath + "/", indexRouter);
+
+// Swagger init
+app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
+
 
 // Captura con un 404 aquellos endpoints no resueltos
 app.use(function(req, res, next) {
